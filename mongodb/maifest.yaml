@@ -8,7 +8,7 @@ metadata:
     environment: dev
     project: roboshop
 spec:
-  replica: 1
+  replicas: 1
   selector:
     matchLabels:
       componet: mongodb
