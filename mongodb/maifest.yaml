@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  labels:
+    componet: mongodb
+    environment: dev
+    project: roboshop
+spec:
+  replica: 1
+  selector:
+    matchLabels:
+      componet: mongodb
+      environment: dev
+      project: roboshop
+  template:
+    metadata:
+      labels:
+        componet: mongodb
+        environment: dev
+        project: roboshop
+      spec:
+        containers: 
+        - name: mongodb
+          image: sarthak6700/mongodb:v1
