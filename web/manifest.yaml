@@ -4,7 +4,7 @@ metadata:
   name: nginx
   namespace: roboshop
 data:
-  nginx.conf: |  # nginx.conf is called key
+  nginx.conf: |
     user www-data;
     worker_processes 4;
     pid /var/run/nginx.pid;
@@ -135,7 +135,7 @@ spec:
         tier: web
         project: roboshop
     spec:
-      volumes:  
+      volumes:
       - name: nginx-conf
         configMap:
           name: nginx
@@ -143,7 +143,7 @@ spec:
           - key: nginx.conf
             path: nginx.conf
       containers:
-      - name: catalogue
+      - name: web
         image: sarthak6700/web:v1
         resources:
           requests:
@@ -156,7 +156,7 @@ spec:
         - name: nginx-conf # name of the volume you created above
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
-          readOnly: true 
+          readOnly: true
 ---
 apiVersion: v1
 kind: Service
