@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mongodb
+  namespace: roboshop
   labels:
     componet: mongodb
     environment: dev
@@ -28,6 +29,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mongodb-service
+  namespace: roboshop
 spec:
   selector:
         componet: mongodb   
