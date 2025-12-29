@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalogue
+  namespace: roboshop
+  labels: # these labels belong to deployment
+    app: catalogue
+    tier: app
+    project: roboshop
+spec:
+  replicas: 1
+  selector:
+    matchLabels: # these labels should match with pod
+      app: catalogue
+      tier: app
+      project: roboshop
+  template: # this is the pod definition
+    metadata:
+      labels:
+        app: catalogue
+        tier: app
+        project: roboshop
+    spec:
+      containers:
+      - name: catalogue
+        image: sarthak6700/catalogue:v1
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "68Mi"
+          limits:
+            cpu: "100m"
+            memory: "128Mi"
+        envFrom:
+        - configMapRef:
+            name: catalogue
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalogue
+  namespace: roboshop
+spec:
+  selector:
+    app: catalogue
+    tier: app
+    project: roboshop
+  ports:
+  - name: mongodb-port
+    protocol: TCP
+    port: 8080 # this port belongs to service
+    targetPort: 8080 # this port belongs to container
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catalogue
+  namespace: roboshop
+data:
+  MONGO: "true" # keep true in double quotes
+  MONGO_URL: "mongodb://mongodb:27017/catalogue" # protocol//service-name:service-port/schema
+# ---
+# apiVersion: autoscaling/v2
+# kind: HorizontalPodAutoscaler
+# metadata:
+#   name: catalogue
+#   namespace: roboshop
+# spec:
+#   scaleTargetRef:
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     name: catalogue
+#   minReplicas: 1
+#   maxReplicas: 10
+#   metrics:
+#   - type: Resource
+#     resource:
+#       name: cpu
+#       target:
+#         type: Utilization
+#         averageUtilization: 75
