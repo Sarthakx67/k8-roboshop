@@ -23,3 +23,18 @@ spec:
         containers: 
         - name: mongodb
           image: sarthak6700/mongodb:v1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+spec:
+  selector:
+        componet: mongodb   
+        environment: dev
+        project: roboshop
+  ports:
+  - name: mongodb-port
+    protocol: TCP
+    port: 27017 # this port belongs to service
+    targetPort: 27017 # this port belongs to container
