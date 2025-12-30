@@ -101,21 +101,25 @@ kind: Deployment
 metadata:
   name: web
   namespace: roboshop
-  labels: # these labels belong to deployment
-    app: web
+  # these labels belong to deployment
+  # These labels are attached to the Deployment object, not to Pods.
+  # used in 1. Organizing & filtering Deployments
+  # Deployment belongs to roboshop It is part of the web tier App name is web
+  labels: 
+    app: web 
     tier: web
     project: roboshop
 spec:
   replicas: 1
-  selector:
-    matchLabels: # these labels should match with pod
+  selector:   # Selector = “Which Pods are mine?”
+    matchLabels: # I (the Deployment) am allowed to manage ONLY Pods that have ALL these labels
       app: web
       tier: web
       project: roboshop
-  template: # this is the pod definition
+  template: # Template = “What Pods do I create?”
     metadata:
-      labels:
-        app: web
+      labels:   # Every Pod I create will be GIVEN these label 
+        app: web # template.metadata.labels ASSIGN labels to Pods.
         tier: web
         project: roboshop
     spec:

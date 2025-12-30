@@ -5,7 +5,7 @@ metadata:
   namespace: roboshop
   labels: # these labels belong to deployment
     app: catalogue
-    tier: app
+    tier: app   
     project: roboshop
 spec:
   replicas: 1
