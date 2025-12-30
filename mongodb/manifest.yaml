@@ -4,20 +4,20 @@ metadata:
   name: mongodb
   namespace: roboshop
   labels:
-    componet: mongodb
+    component: mongodb
     environment: dev
     project: roboshop
 spec:
   replicas: 1
   selector:
     matchLabels:
-      componet: mongodb
+      component: mongodb
       environment: dev
       project: roboshop
   template:
     metadata:
       labels:
-        componet: mongodb
+        component: mongodb
         environment: dev
         project: roboshop
     spec:
@@ -32,7 +32,7 @@ metadata:
   namespace: roboshop
 spec:
   selector:
-        componet: mongodb   
+        component: mongodb   
         environment: dev
         project: roboshop
   ports:

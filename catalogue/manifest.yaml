@@ -46,7 +46,7 @@ spec:
     tier: app
     project: roboshop
   ports:
-  - name: mongodb-port
+  - name: catalogue-port
     protocol: TCP
     port: 8080 # this port belongs to service
     targetPort: 8080 # this port belongs to container

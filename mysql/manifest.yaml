@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: roboshop
+  labels:
+    component: mysql
+    environment: dev
+    project: roboshop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: mysql
+      environment: dev
+      project: roboshop
+  template:
+    metadata:
+      labels:
+        component: mysql
+        environment: dev
+        project: roboshop
+    spec:
+      containers: 
+      - name: mysql
+        image: sarthak6700/mysql:v1
+        envFrom:
+        - configMapRef:
+            name: mysql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: roboshop
+spec:
+  selector:
+        component: mysql   
+        environment: dev
+        project: roboshop
+  ports:
+  - name: mysql-port
+    protocol: TCP
+    port: 3306 # this port belongs to service
+    targetPort: 3306 # this port belongs to container
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql
+  namespace: roboshop
+data:
+  MYSQL_ALLOW_EMPTY_PASSWORD: "yes" # keep true in double quotes
+  MYSQL_DATABASE: "cities"
+  MYSQL_USER: "shipping"
+  MYSQL_PASSWORD: "RoboShop@1"
