@@ -25,12 +25,13 @@ spec:
       - name: mysql
         image: sarthak6700/mysql:v1
         resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "300m"
         envFrom:
         - configMapRef:
             name: mysql
