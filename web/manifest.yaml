@@ -96,7 +96,7 @@ data:
           proxy_pass http://user:8080/;
         }
 
-        location /api/user/ {
+        location /api/shipping/ {
           proxy_pass http://shipping:8080/;
         }
 
