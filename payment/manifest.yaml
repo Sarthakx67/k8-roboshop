@@ -5,7 +5,7 @@ metadata:
   namespace: roboshop
   labels: # these labels belong to deployment
     app: payment
-    tier: app   
+    tier: app
     project: roboshop
 spec:
   replicas: 1
@@ -24,13 +24,6 @@ spec:
       containers:
       - name: payment
         image: sarthak6700/payment:v1
-        resources:
-          requests:
-            cpu: "50m"
-            memory: "68Mi"
-          limits:
-            cpu: "100m"
-            memory: "128Mi"
         envFrom:
         - configMapRef:
             name: payment
@@ -62,24 +55,3 @@ data:
   USER_HOST: "user"
   USER_PORT: "8080"
   AMQP_HOST: "rabbitmq"
-
-# ---
-# apiVersion: autoscaling/v2
-# kind: HorizontalPodAutoscaler
-# metadata:
-#   name: payment
-#   namespace: roboshop
-# spec:
-#   scaleTargetRef:
-#     apiVersion: apps/v1
-#     kind: Deployment
-#     name: payment
-#   minReplicas: 1
-#   maxReplicas: 10
-#   metrics:
-#   - type: Resource
-#     resource:
-#       name: cpu
-#       target:
-#         type: Utilization
-#         averageUtilization: 75
