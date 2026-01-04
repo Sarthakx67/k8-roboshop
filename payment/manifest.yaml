@@ -27,6 +27,8 @@ spec:
         envFrom:
         - configMapRef:
             name: payment
+        - secretRef:
+            name: rabbitmq-secret 
 ---
 apiVersion: v1
 kind: Service
@@ -55,3 +57,13 @@ data:
   USER_HOST: "user"
   USER_PORT: "8080"
   AMQP_HOST: "rabbitmq"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rabbitmq-secret
+  namespace: roboshop
+type: Opaque
+stringData:
+  AMQP_USER: roboshop
+  AMQP_PASS: roboshop123
