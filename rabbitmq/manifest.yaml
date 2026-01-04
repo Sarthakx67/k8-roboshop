@@ -29,6 +29,19 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "200m"
+        env:
+        - name: RABBITMQ_DEFAULT_USER
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-secret
+              key: AMQP_USER
+        - name: RABBITMQ_DEFAULT_PASS
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-secret
+              key: AMQP_PASS
+        - name: RABBITMQ_DEFAULT_VHOST
+          value: /
 ---
 apiVersion: v1
 kind: Service
