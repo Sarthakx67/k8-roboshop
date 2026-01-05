@@ -3,65 +3,49 @@ import pika
 import os
 
 class Publisher:
+    HOST = os.getenv('AMQP_HOST', 'rabbitmq')
+    USER = os.getenv('AMQP_USER', 'guest')
+    PASS = os.getenv('AMQP_PASS', 'guest')
+    VIRTUAL_HOST = '/'
+    EXCHANGE='robot-shop'
+    TYPE='direct'
+    ROUTING_KEY = 'orders'
+
     def __init__(self, logger):
         self._logger = logger
-
-        self.HOST = os.getenv('AMQP_HOST')
-        self.USER = os.getenv('AMQP_USER')
-        self.PASS = os.getenv('AMQP_PASS')
-        self.VIRTUAL_HOST = os.getenv('AMQP_VHOST', '/')
-
-        self.EXCHANGE = os.getenv('AMQP_EXCHANGE', 'robot-shop')
-        self.TYPE = os.getenv('AMQP_EXCHANGE_TYPE', 'direct')
-        self.ROUTING_KEY = os.getenv('AMQP_ROUTING_KEY', 'orders')
-
-        # 🔥 FAIL FAST (VERY IMPORTANT)
-        missing = [k for k, v in {
-            "AMQP_HOST": self.HOST,
-            "AMQP_USER": self.USER,
-            "AMQP_PASS": self.PASS
-        }.items() if not v]
-
-        if missing:
-            raise RuntimeError(f"Missing RabbitMQ env vars: {', '.join(missing)}")
-
-        self._params = pika.ConnectionParameters(
+        self._params = pika.connection.ConnectionParameters(
             host=self.HOST,
             virtual_host=self.VIRTUAL_HOST,
-            credentials=pika.PlainCredentials(self.USER, self.PASS),
-            heartbeat=30,
-            blocked_connection_timeout=30
-        )
-
+            credentials=pika.credentials.PlainCredentials(self.USER, self.PASS))
         self._conn = None
         self._channel = None
 
     def _connect(self):
-        if not self._conn or self._conn.is_closed:
+        if not self._conn or self._conn.is_closed or self._channel is None or self._channel.is_closed:
             self._conn = pika.BlockingConnection(self._params)
             self._channel = self._conn.channel()
-            self._channel.exchange_declare(
-                exchange=self.EXCHANGE,
-                exchange_type=self.TYPE,
-                durable=True
-            )
-            self._logger.info(
-                f'connected to broker {self.HOST} vhost={self.VIRTUAL_HOST}'
-            )
+            self._channel.exchange_declare(exchange=self.EXCHANGE, exchange_type=self.TYPE, durable=True)
+            self._logger.info('connected to broker')
 
-    def publish(self, msg, headers=None):
-        if not self._conn or self._conn.is_closed:
+    def _publish(self, msg, headers):
+        self._channel.basic_publish(exchange=self.EXCHANGE,
+                                    routing_key=self.ROUTING_KEY,
+                                    properties=pika.BasicProperties(headers=headers),
+                                    body=json.dumps(msg).encode())
+        self._logger.info('message sent')
+
+    #Publish msg, reconnecting if necessary.
+    def publish(self, msg, headers):
+        if self._channel is None or self._channel.is_closed or self._conn is None or self._conn.is_closed:
             self._connect()
-
-        self._channel.basic_publish(
-            exchange=self.EXCHANGE,
-            routing_key=self.ROUTING_KEY,
-            body=json.dumps(msg).encode(),
-            properties=pika.BasicProperties(headers=headers or {})
-        )
-
-        self._logger.info('message sent to queue')
+        try:
+            self._publish(msg, headers)
+        except (pika.exceptions.ConnectionClosed, pika.exceptions.StreamLostError):
+            self._logger.info('reconnecting to queue')
+            self._connect()
+            self._publish(msg, headers)
 
     def close(self):
         if self._conn and self._conn.is_open:
+            self._logger.info('closing queue connection')
             self._conn.close()
