@@ -167,8 +167,8 @@ metadata:
   name: web
   namespace: roboshop
 spec:
-  # type: LoadBalancer
-  type: NodePort
+  type: LoadBalancer
+  # type: NodePort
   selector:
     app: web
     tier: web
